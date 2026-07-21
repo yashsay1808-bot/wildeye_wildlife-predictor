@@ -547,26 +547,47 @@
                     </div>
                 </div>
             </div>
-<!-- SMS Alert Panel -->
-<div class="sms-panel" style="background:var(--glass);border:1px solid var(--glass-border);border-radius:12px;padding:14px;margin-bottom:16px;">
+<!-- ===== SMS ALERT LOGIN PANEL ===== -->
+<div class="login-panel" style="background:var(--glass);border:1px solid var(--glass-border);border-radius:12px;padding:14px;margin-bottom:16px;">
     <h3 style="font-size:13px;font-weight:600;color:var(--text-secondary);margin-bottom:10px;display:flex;align-items:center;gap:8px;">
-        <i class="fas fa-sms" style="color:var(--success);"></i> SMS Alerts
+        <i class="fas fa-lock" style="color:var(--accent);"></i> SMS Alert Login
     </h3>
-    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">
-        <button id="smsTestBtn" style="padding:6px 12px;background:var(--glass);border:1px solid var(--glass-border);border-radius:8px;color:#fff;font-size:10px;cursor:pointer;transition:all 0.3s;font-family:'Inter',sans-serif;">
-            <i class="fas fa-vial"></i> Test
+    
+    <!-- Login Form -->
+    <div id="loginForm">
+        <div style="margin-bottom:8px;">
+            <input type="text" id="loginUsername" placeholder="Username" style="width:100%;padding:8px 12px;border-radius:8px;border:1px solid var(--glass-border);background:rgba(255,255,255,0.06);color:#fff;font-size:12px;outline:none;font-family:'Inter',sans-serif;box-sizing:border-box;">
+        </div>
+        <div style="margin-bottom:10px;">
+            <input type="password" id="loginPassword" placeholder="Password" style="width:100%;padding:8px 12px;border-radius:8px;border:1px solid var(--glass-border);background:rgba(255,255,255,0.06);color:#fff;font-size:12px;outline:none;font-family:'Inter',sans-serif;box-sizing:border-box;">
+        </div>
+        <button id="loginBtn" style="width:100%;padding:8px;background:var(--accent);border:none;border-radius:8px;color:var(--primary-dark);font-weight:600;cursor:pointer;transition:all 0.3s;font-family:'Inter',sans-serif;">
+            <i class="fas fa-sign-in-alt"></i> Login
         </button>
-        <button id="smsFarmerBtn" style="padding:6px 12px;background:#28a745;border:none;border-radius:8px;color:#fff;font-size:10px;cursor:pointer;transition:all 0.3s;font-family:'Inter',sans-serif;">
-            <i class="fas fa-user"></i> Farmers
-        </button>
-        <button id="smsOfficerBtn" style="padding:6px 12px;background:#e67e22;border:none;border-radius:8px;color:#fff;font-size:10px;cursor:pointer;transition:all 0.3s;font-family:'Inter',sans-serif;">
-            <i class="fas fa-user-tie"></i> Officers
-        </button>
-        <button id="smsEmergencyBtn" style="padding:6px 12px;background:#dc3545;border:none;border-radius:8px;color:#fff;font-size:10px;cursor:pointer;transition:all 0.3s;font-family:'Inter',sans-serif;">
-            <i class="fas fa-exclamation-triangle"></i> Emergency
+        <div id="loginStatus" style="font-size:11px;color:var(--text-secondary);text-align:center;margin-top:6px;"></div>
+    </div>
+    
+    <!-- SMS Controls (Hidden until login) -->
+    <div id="smsControls" style="display:none;">
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">
+            <button id="smsTestBtn" style="padding:6px 12px;background:var(--glass);border:1px solid var(--glass-border);border-radius:8px;color:#fff;font-size:10px;cursor:pointer;transition:all 0.3s;font-family:'Inter',sans-serif;">
+                <i class="fas fa-vial"></i> Test
+            </button>
+            <button id="smsFarmerBtn" style="padding:6px 12px;background:#28a745;border:none;border-radius:8px;color:#fff;font-size:10px;cursor:pointer;transition:all 0.3s;font-family:'Inter',sans-serif;">
+                <i class="fas fa-user"></i> Farmers
+            </button>
+            <button id="smsOfficerBtn" style="padding:6px 12px;background:#e67e22;border:none;border-radius:8px;color:#fff;font-size:10px;cursor:pointer;transition:all 0.3s;font-family:'Inter',sans-serif;">
+                <i class="fas fa-user-tie"></i> Officers
+            </button>
+            <button id="smsEmergencyBtn" style="padding:6px 12px;background:#dc3545;border:none;border-radius:8px;color:#fff;font-size:10px;cursor:pointer;transition:all 0.3s;font-family:'Inter',sans-serif;">
+                <i class="fas fa-exclamation-triangle"></i> Emergency
+            </button>
+        </div>
+        <div id="smsStatus" style="font-size:11px;color:var(--text-secondary);text-align:center;">Logged in as <span id="loggedInUser">User</span></div>
+        <button id="logoutBtn" style="width:100%;margin-top:6px;padding:4px;background:transparent;border:1px solid var(--danger);border-radius:6px;color:var(--danger);font-size:10px;cursor:pointer;font-family:'Inter',sans-serif;">
+            <i class="fas fa-sign-out-alt"></i> Logout
         </button>
     </div>
-    <div id="smsStatus" style="font-size:11px;color:var(--text-secondary);text-align:center;"></div>
 </div>
             <!-- API Status -->
             <div style="font-size:12px; color:var(--text-secondary); padding:4px 0; border-top:1px solid var(--glass-border); margin-top:auto; padding-top:14px;">
