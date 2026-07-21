@@ -1915,6 +1915,250 @@ async function deleteDocument(docId) {
         console.error('Delete error:', error);
     }
 }
+        // ============================================================
+//  SMS ALERT LOGIN SYSTEM
+// ============================================================
+
+// User credentials (in production, this should be on a server)
+const VALID_USERS = {
+    'admin': 'admin123',
+    'officer': 'forest2024',
+    'forest': 'wildlife123'
+};
+
+// Session state
+let isLoggedIn = false;
+let currentUser = '';
+
+// Login function
+function loginUser(username, password) {
+    // Check credentials
+    if (VALID_USERS[username] && VALID_USERS[username] === password) {
+        isLoggedIn = true;
+        currentUser = username;
+        
+        // Update UI
+        document.getElementById('loginForm').style.display = 'none';
+        document.getElementById('smsControls').style.display = 'block';
+        document.getElementById('loggedInUser').textContent = username;
+        document.getElementById('loginStatus').textContent = '✅ Login successful!';
+        document.getElementById('loginStatus').style.color = '#28a745';
+        
+        // Store session (optional - for page refresh)
+        sessionStorage.setItem('smsUser', username);
+        sessionStorage.setItem('smsLoggedIn', 'true');
+        
+        return true;
+    } else {
+        document.getElementById('loginStatus').textContent = '❌ Invalid username or password';
+        document.getElementById('loginStatus').style.color = '#dc3545';
+        return false;
+    }
+}
+
+// Logout function
+function logoutUser() {
+    isLoggedIn = false;
+    currentUser = '';
+    
+    // Update UI
+    document.getElementById('loginForm').style.display = 'block';
+    document.getElementById('smsControls').style.display = 'none';
+    document.getElementById('loginStatus').textContent = 'Logged out successfully';
+    document.getElementById('loginStatus').style.color = 'var(--text-secondary)';
+    
+    // Clear session
+    sessionStorage.removeItem('smsUser');
+    sessionStorage.removeItem('smsLoggedIn');
+}
+
+// Check for existing session on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const savedUser = sessionStorage.getItem('smsUser');
+    const savedStatus = sessionStorage.getItem('smsLoggedIn');
+    
+    if (savedStatus === 'true' && savedUser) {
+        // Auto-login
+        isLoggedIn = true;
+        currentUser = savedUser;
+        document.getElementById('loginForm').style.display = 'none';
+        document.getElementById('smsControls').style.display = 'block';
+        document.getElementById('loggedInUser').textContent = savedUser;
+    }
+});
+
+// ============================================================
+//  EVENT LISTENERS
+// ============================================================
+
+// Login button
+document.getElementById('loginBtn').addEventListener('click', function() {
+    const username = document.getElementById('loginUsername').value.trim();
+    const password = document.getElementById('loginPassword').value.trim();
+    
+    if (!username || !password) {
+        document.getElementById('loginStatus').textContent = '⚠️ Please enter both username and password';
+        document.getElementById('loginStatus').style.color = '#ffc107';
+        return;
+    }
+    
+    loginUser(username, password);
+});
+
+// Enter key support
+document.getElementById('loginPassword').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+        document.getElementById('loginBtn').click();
+    }
+});
+
+document.getElementById('loginUsername').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+        document.getElementById('loginPassword').focus();
+    }
+});
+
+// Logout button
+document.getElementById('logoutBtn').addEventListener('click', logoutUser);
+
+// ============================================================
+//  SMS FUNCTIONS (Protected by Login)
+// ============================================================
+
+// Helper function to check login before SMS actions
+function requireLogin(action) {
+    if (!isLoggedIn) {
+        document.getElementById('loginStatus').textContent = '⚠️ Please login first';
+        document.getElementById('loginStatus').style.color = '#ffc107';
+        return false;
+    }
+    return true;
+}
+
+// Test SMS
+document.getElementById('smsTestBtn').addEventListener('click', async function() {
+    if (!requireLogin('Test SMS')) return;
+    
+    const status = document.getElementById('smsStatus');
+    status.textContent = '⏳ Testing SMS...';
+    status.style.color = '#ffc107';
+    
+    try {
+        const response = await fetch(`${SMS_API_URL}/test`);
+        const data = await response.json();
+        if (data.success) {
+            status.textContent = '✅ Test SMS sent successfully!';
+            status.style.color = '#28a745';
+        } else {
+            status.textContent = '❌ Failed: ' + (data.error || 'Unknown error');
+            status.style.color = '#dc3545';
+        }
+    } catch (error) {
+        status.textContent = '❌ Error: ' + error.message;
+        status.style.color = '#dc3545';
+    }
+});
+
+// Alert Farmers
+document.getElementById('smsFarmerBtn').addEventListener('click', async function() {
+    if (!requireLogin('Alert Farmers')) return;
+    
+    const status = document.getElementById('smsStatus');
+    status.textContent = '⏳ Sending to farmers...';
+    status.style.color = '#ffc107';
+    
+    try {
+        const response = await fetch(`${SMS_API_URL}/alert`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                animal: 'Elephant',
+                location: 'Bandipur boundary',
+                confidence: 85,
+                priority: 'medium'
+            })
+        });
+        const data = await response.json();
+        if (data.success) {
+            status.textContent = `✅ ${data.message}`;
+            status.style.color = '#28a745';
+        } else {
+            status.textContent = '❌ Failed: ' + (data.detail || 'Unknown error');
+            status.style.color = '#dc3545';
+        }
+    } catch (error) {
+        status.textContent = '❌ Error: ' + error.message;
+        status.style.color = '#dc3545';
+    }
+});
+
+// Alert Officers
+document.getElementById('smsOfficerBtn').addEventListener('click', async function() {
+    if (!requireLogin('Alert Officers')) return;
+    
+    const status = document.getElementById('smsStatus');
+    status.textContent = '⏳ Sending to officers...';
+    status.style.color = '#ffc107';
+    
+    try {
+        const response = await fetch(`${SMS_API_URL}/alert`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                animal: 'Tiger',
+                location: 'Nagarahole core',
+                confidence: 92,
+                priority: 'high'
+            })
+        });
+        const data = await response.json();
+        if (data.success) {
+            status.textContent = `✅ ${data.message}`;
+            status.style.color = '#28a745';
+        } else {
+            status.textContent = '❌ Failed: ' + (data.detail || 'Unknown error');
+            status.style.color = '#dc3545';
+        }
+    } catch (error) {
+        status.textContent = '❌ Error: ' + error.message;
+        status.style.color = '#dc3545';
+    }
+});
+
+// Emergency Alert
+document.getElementById('smsEmergencyBtn').addEventListener('click', async function() {
+    if (!requireLogin('Emergency Alert')) return;
+    
+    if (!confirm('🚨 Send EMERGENCY alert to ALL contacts?')) return;
+    
+    const status = document.getElementById('smsStatus');
+    status.textContent = '⏳ Sending emergency alerts...';
+    status.style.color = '#ffc107';
+    
+    try {
+        const response = await fetch(`${SMS_API_URL}/alert`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                animal: 'Wild Elephant Herd',
+                location: 'Village boundary',
+                confidence: 95,
+                priority: 'critical'
+            })
+        });
+        const data = await response.json();
+        if (data.success) {
+            status.textContent = `✅ ${data.message}`;
+            status.style.color = '#28a745';
+        } else {
+            status.textContent = '❌ Failed: ' + (data.detail || 'Unknown error');
+            status.style.color = '#dc3545';
+        }
+    } catch (error) {
+        status.textContent = '❌ Error: ' + error.message;
+        status.style.color = '#dc3545';
+    }
+});
 </script>
 </body>
 </html>
