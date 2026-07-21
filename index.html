@@ -547,7 +547,27 @@
                     </div>
                 </div>
             </div>
-
+<!-- SMS Alert Panel -->
+<div class="sms-panel" style="background:var(--glass);border:1px solid var(--glass-border);border-radius:12px;padding:14px;margin-bottom:16px;">
+    <h3 style="font-size:13px;font-weight:600;color:var(--text-secondary);margin-bottom:10px;display:flex;align-items:center;gap:8px;">
+        <i class="fas fa-sms" style="color:var(--success);"></i> SMS Alerts
+    </h3>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">
+        <button id="smsTestBtn" style="padding:6px 12px;background:var(--glass);border:1px solid var(--glass-border);border-radius:8px;color:#fff;font-size:10px;cursor:pointer;transition:all 0.3s;font-family:'Inter',sans-serif;">
+            <i class="fas fa-vial"></i> Test
+        </button>
+        <button id="smsFarmerBtn" style="padding:6px 12px;background:#28a745;border:none;border-radius:8px;color:#fff;font-size:10px;cursor:pointer;transition:all 0.3s;font-family:'Inter',sans-serif;">
+            <i class="fas fa-user"></i> Farmers
+        </button>
+        <button id="smsOfficerBtn" style="padding:6px 12px;background:#e67e22;border:none;border-radius:8px;color:#fff;font-size:10px;cursor:pointer;transition:all 0.3s;font-family:'Inter',sans-serif;">
+            <i class="fas fa-user-tie"></i> Officers
+        </button>
+        <button id="smsEmergencyBtn" style="padding:6px 12px;background:#dc3545;border:none;border-radius:8px;color:#fff;font-size:10px;cursor:pointer;transition:all 0.3s;font-family:'Inter',sans-serif;">
+            <i class="fas fa-exclamation-triangle"></i> Emergency
+        </button>
+    </div>
+    <div id="smsStatus" style="font-size:11px;color:var(--text-secondary);text-align:center;"></div>
+</div>
             <!-- API Status -->
             <div style="font-size:12px; color:var(--text-secondary); padding:4px 0; border-top:1px solid var(--glass-border); margin-top:auto; padding-top:14px;">
                 <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -1433,7 +1453,131 @@
 // IMPORTANT: Update this URL to your RAG server
 const RAG_API_URL = 'http://localhost:8000';  // For local testing
 // const RAG_API_URL = 'https://your-rag-server.onrender.com';  // For production
+// ============================================================
+//  SMS ALERT SYSTEM - Frontend Integration
+// ============================================================
 
+const SMS_API_URL = 'http://localhost:5000';  // Your SMS server
+
+// Test SMS
+document.getElementById('smsTestBtn').addEventListener('click', async () => {
+    const status = document.getElementById('smsStatus');
+    status.textContent = '⏳ Testing SMS...';
+    status.style.color = '#ffc107';
+    
+    try {
+        const response = await fetch(`${SMS_API_URL}/test`);
+        const data = await response.json();
+        if (data.success) {
+            status.textContent = '✅ Test SMS sent successfully!';
+            status.style.color = '#28a745';
+        } else {
+            status.textContent = '❌ Failed: ' + (data.error || 'Unknown error');
+            status.style.color = '#dc3545';
+        }
+    } catch (error) {
+        status.textContent = '❌ Error: ' + error.message;
+        status.style.color = '#dc3545';
+    }
+});
+
+// Alert Farmers
+document.getElementById('smsFarmerBtn').addEventListener('click', async () => {
+    const status = document.getElementById('smsStatus');
+    status.textContent = '⏳ Sending to farmers...';
+    status.style.color = '#ffc107';
+    
+    try {
+        const response = await fetch(`${SMS_API_URL}/alert`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                animal: 'Elephant',
+                location: 'Bandipur boundary',
+                confidence: 85,
+                priority: 'medium'
+            })
+        });
+        const data = await response.json();
+        if (data.success) {
+            status.textContent = `✅ ${data.message}`;
+            status.style.color = '#28a745';
+        } else {
+            status.textContent = '❌ Failed: ' + (data.detail || 'Unknown error');
+            status.style.color = '#dc3545';
+        }
+    } catch (error) {
+        status.textContent = '❌ Error: ' + error.message;
+        status.style.color = '#dc3545';
+    }
+});
+
+// Alert Officers
+document.getElementById('smsOfficerBtn').addEventListener('click', async () => {
+    const status = document.getElementById('smsStatus');
+    status.textContent = '⏳ Sending to officers...';
+    status.style.color = '#ffc107';
+    
+    try {
+        const response = await fetch(`${SMS_API_URL}/alert`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                animal: 'Tiger',
+                location: 'Nagarahole core',
+                confidence: 92,
+                priority: 'high'
+            })
+        });
+        const data = await response.json();
+        if (data.success) {
+            status.textContent = `✅ ${data.message}`;
+            status.style.color = '#28a745';
+        } else {
+            status.textContent = '❌ Failed: ' + (data.detail || 'Unknown error');
+            status.style.color = '#dc3545';
+        }
+    } catch (error) {
+        status.textContent = '❌ Error: ' + error.message;
+        status.style.color = '#dc3545';
+    }
+});
+
+// Emergency Alert
+document.getElementById('smsEmergencyBtn').addEventListener('click', async () => {
+    if (!confirm('🚨 Send EMERGENCY alert to ALL contacts?')) return;
+    
+    const status = document.getElementById('smsStatus');
+    status.textContent = '⏳ Sending emergency alerts...';
+    status.style.color = '#ffc107';
+    
+    try {
+        const response = await fetch(`${SMS_API_URL}/alert`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                animal: 'Wild Elephant Herd',
+                location: 'Village boundary',
+                confidence: 95,
+                priority: 'critical'
+            })
+        });
+        const data = await response.json();
+        if (data.success) {
+            status.textContent = `✅ ${data.message}`;
+            status.style.color = '#28a745';
+        } else {
+            status.textContent = '❌ Failed: ' + (data.detail || 'Unknown error');
+            status.style.color = '#dc3545';
+        }
+    } catch (error) {
+        status.textContent = '❌ Error: ' + error.message;
+        status.style.color = '#dc3545';
+    }
+});
+
+console.log('📱 SMS Alert System initialized!');
+console.log('📡 SMS API:', SMS_API_URL);
 // ============================================================
 //  Initialize RAG System
 // ============================================================
